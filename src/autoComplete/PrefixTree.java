@@ -28,20 +28,20 @@ public class PrefixTree {
     public void add(String word){
         TreeNode newNode;
         TreeNode oldNode = root;
-        Character chr;
+        Character letter;
         if(!contains(word)) {
             for(int i = 0; i < word.length(); i++) {
-                chr = word.charAt(i);
-                newNode = oldNode.getChildNode(chr);
+                letter = word.charAt(i);
+                newNode = oldNode.getChildNode(letter);
 
                 if(newNode == null) {
                     newNode = new TreeNode();
-                    newNode.setLetter(chr);
-                    oldNode.addChild(chr, newNode);
+                    newNode.letter = letter;
+                    oldNode.addChild(letter, newNode);
                 }
 
                 if(i == word.length() - 1) {
-                    newNode.setIsWord(true);
+                    newNode.isWord = true;
                 }
 
                 oldNode = newNode;
@@ -56,18 +56,18 @@ public class PrefixTree {
      * @return true if contained in the tree.
      */
     public boolean contains(String word){
-        char currentChar;
+        char currentLetter;
         TreeNode currentNode = root;
         TreeNode childNode;
         for(int i = 0; i < word.length(); i ++) {
-            currentChar = word.charAt(i);
-            childNode = currentNode.getChildNode(currentChar);
+            currentLetter = word.charAt(i);
+            childNode = currentNode.getChildNode(currentLetter);
             if(childNode == null){
                 return false;
             }
             currentNode = childNode;
         }
-        return currentNode.getIsWord();
+        return currentNode.isWord;
     }
 
     /**
@@ -78,13 +78,13 @@ public class PrefixTree {
      */
     public ArrayList<String> getWordsForPrefix(String prefix){
         ArrayList<String> prefixList = new ArrayList<>();
-        char currentChar;
+        char currentLetter;
         TreeNode currentNode = root;
 
 
         for(int i = 0; i < prefix.length(); i++) {
-            currentChar = prefix.charAt(i);
-            currentNode = currentNode.getChildNode(currentChar);
+            currentLetter = prefix.charAt(i);
+            currentNode = currentNode.getChildNode(currentLetter);
             if(currentNode == null) {
                 return prefixList;
             }
@@ -102,16 +102,16 @@ public class PrefixTree {
      * @param prefix The prefix
      * @param strList The list of strings to add the words to
      */
-    private void preOrderTraverse(TreeNode node, String prefix, ArrayList<String> strList) {
+    private void preOrderTraverse(TreeNode node, String prefix, ArrayList<String> prefixList) {
         Map<Character, TreeNode> children = node.getChildren();
         if(node.isWord) {
-            strList.add(prefix);
+            prefixList.add(prefix);
         }
 
         for (Map.Entry<Character, TreeNode> entry : children.entrySet()) {
             TreeNode newNode = entry.getValue();
             String newPrefix = prefix + entry.getKey();
-            preOrderTraverse(newNode, newPrefix, strList);
+            preOrderTraverse(newNode, newPrefix, prefixList);
         }
     }
 
