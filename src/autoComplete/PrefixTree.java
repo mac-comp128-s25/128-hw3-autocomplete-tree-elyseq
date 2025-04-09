@@ -3,6 +3,8 @@ package autoComplete;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.w3c.dom.Node;
+
 /**
  * A prefix tree used for autocompletion. The root of the tree just stores links to child nodes (up to 26, one per letter).
  * Each child node represents a letter. A path from a root's child node down to a node where isWord is true represents the sequence
@@ -24,7 +26,28 @@ public class PrefixTree {
      * @param word
      */
     public void add(String word){
-        //TODO: complete me
+        TreeNode newNode;
+        TreeNode oldNode = root;
+        Character letter;
+        if(!contains(word)) {
+            for(int i = 0; i < word.length(); i++) {
+                letter = word.charAt(i);
+                newNode = oldNode.getChildNode(letter);
+
+                if(newNode == null) {
+                    newNode = new TreeNode();
+                    newNode.letter = letter;
+                    oldNode.addChild(letter, newNode);
+                }
+
+                if(i == word.length() - 1) {
+                    newNode.isWord = true;
+                }
+
+                oldNode = newNode;
+            }
+            size++;
+        }
     }
 
     /**
@@ -33,8 +56,18 @@ public class PrefixTree {
      * @return true if contained in the tree.
      */
     public boolean contains(String word){
-        //TODO: complete me
-        return false;
+        char currentLetter;
+        TreeNode currentNode = root;
+        TreeNode childNode;
+        for(int i = 0; i < word.length(); i ++) {
+            currentLetter = word.charAt(i);
+            childNode = currentNode.getChildNode(currentLetter);
+            if(childNode == null){
+                return false;
+            }
+            currentNode = childNode;
+        }
+        return currentNode.isWord;
     }
 
     /**
@@ -44,8 +77,42 @@ public class PrefixTree {
      * @return list of words with prefix
      */
     public ArrayList<String> getWordsForPrefix(String prefix){
-        //TODO: complete me
-        return null;
+        ArrayList<String> prefixList = new ArrayList<>();
+        char currentLetter;
+        TreeNode currentNode = root;
+
+
+        for(int i = 0; i < prefix.length(); i++) {
+            currentLetter = prefix.charAt(i);
+            currentNode = currentNode.getChildNode(currentLetter);
+            if(currentNode == null) {
+                return prefixList;
+            }
+        }
+
+        preOrderTraverse(currentNode, prefix, prefixList);
+
+        return prefixList;
+    }
+
+    /**
+     * Perform a preorder traversal.
+     *
+     * @param node The local root
+     * @param prefix The prefix
+     * @param strList The list of strings to add the words to
+     */
+    private void preOrderTraverse(TreeNode node, String prefix, ArrayList<String> prefixList) {
+        Map<Character, TreeNode> children = node.getChildren();
+        if(node.isWord) {
+            prefixList.add(prefix);
+        }
+
+        for (Map.Entry<Character, TreeNode> entry : children.entrySet()) {
+            TreeNode newNode = entry.getValue();
+            String newPrefix = prefix + entry.getKey();
+            preOrderTraverse(newNode, newPrefix, prefixList);
+        }
     }
 
     /**

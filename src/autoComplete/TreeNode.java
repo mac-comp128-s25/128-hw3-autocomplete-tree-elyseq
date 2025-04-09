@@ -23,4 +23,16 @@ public class TreeNode {
         children = new HashMap<>();
         isWord = false;
     }
+
+    public Map<Character, TreeNode> getChildren() {
+        return children;
+    }
+
+    public void addChild(Character chr, TreeNode node) {
+        children.put(chr, node);
+    }
+
+    public TreeNode getChildNode(Character chr) {
+        return children.get(chr);
+    }
 }
